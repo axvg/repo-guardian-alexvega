@@ -10,10 +10,17 @@ jobs:
       - uses: actions/setup-python@v5
         with: {python-version: '3.12'}
 
-      - run: pip install -r requirements.txt
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install .
 
-      # - run: ruff check src tests --quiet
+      - run: ruff check src tests
 
-      # - run: pytest -n auto
+      - run: pytest -v
 
-      # - run: behave -f progress
+      - run: behave
+
+      - run: sudo apt install -y shellcheck
+
+      - run: shellcheck scripts/scan-repo.sh
