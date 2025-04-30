@@ -1,0 +1,24 @@
+[project]
+name = "repo-guardian"
+version = "0.1.0"
+readme = "README.md"
+requires-python = ">=3.12"
+license = {text = "MIT"}
+authors = [
+    {name = "Alex Vega"}
+]
+dependencies = [
+    "behave",
+    "pytest",
+    "pytest-xdist",
+    "rich",
+    "ruff",
+    "coverage",
+    "pygtrie",
+    "textdistance",
+    "networkx"
+]
+
+[tool.setuptools]
+packages = ["guardian"]
+package-dir = {"" = "src"}

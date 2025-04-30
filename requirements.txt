@@ -14,6 +14,7 @@ Pygments==2.19.1
 pygtrie==2.5.0
 pytest==8.3.5
 pytest-xdist==3.6.1
+repo-guardian @ file:///C:/Users/la/repos/github.com/axvg/uni/2025-01/desoft/repo-guardian
 rich==14.0.0
 ruff==0.11.7
 six==1.17.0
