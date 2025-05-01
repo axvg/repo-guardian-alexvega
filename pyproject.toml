@@ -11,12 +11,14 @@ dependencies = [
     "behave",
     "pytest",
     "pytest-xdist",
+    "pytest-cov",
     "rich",
     "ruff",
     "coverage",
     "pygtrie",
     "textdistance",
-    "networkx"
+    "networkx",
+    "typer",
 ]
 
 [tool.setuptools]

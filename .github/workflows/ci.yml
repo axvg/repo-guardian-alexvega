@@ -17,7 +17,12 @@ jobs:
 
       - run: ruff check src tests
 
-      - run: pytest -v
+      - name: Run tests with coverage
+        run: pytest --cov=src/guardian --cov-report=html --cov-report=term-missing
+
+      - run: |
+          coverage report --fail-under=70
+          echo "Coverage is above 70%!!"
 
       - run: behave
 
