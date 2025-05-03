@@ -1,7 +1,7 @@
 import typer
-from guardian.object_scanner import read_loose, read_packfile
+from object_scanner import read_loose, read_packfile
 from pathlib import Path
-from guardian.utils import get_git_dir, find_loose_object_dirs, find_packfiles
+from utils import get_git_dir, find_loose_object_dirs, find_packfiles
 
 app = typer.Typer()
 
@@ -31,7 +31,7 @@ def scan(repo_path: str):
             for obj_dir in loose_dirs:
                 obj = read_loose(obj_dir)
                 typer.secho(
-                    f"loose: tipo={obj.type}, sha={obj.sha}, size={obj.size}",
+                    f"o: tipo={obj.obj_type}, sha={obj.sha}, size={obj.size}",
                     fg=typer.colors.BRIGHT_RED,
                     bold=True,
                     )
@@ -44,7 +44,7 @@ def scan(repo_path: str):
                 pack = read_packfile(pack_dir)
                 for obj in pack:
                     typer.secho(
-                        f"pack: tipo={obj.type}, size={obj.size}",
+                        f"pack: tipo={obj.obj_type}, size={obj.size}",
                         fg=typer.colors.YELLOW,
                         bold=True,
                         )
