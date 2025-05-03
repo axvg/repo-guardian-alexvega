@@ -6,7 +6,11 @@ from guardian.dag_builder import (
     parse_commit_content,
     get_parent_commits,
     calculate_generation_numbers,
-    get_dag_stats
+    get_dag_stats,
+    detect_history_rewrites,
+    find_similar_paths,
+    get_commit_path_string,
+    is_likely_rewrite
 )
 from guardian.object_scanner import GitObject
 
@@ -223,3 +227,85 @@ def test_get_dag_stats_with_exception():
         stats = get_dag_stats(dag)
 
         assert stats["is_dag"] == -1
+
+
+def test_get_commit_path_string():
+    dag = nx.DiGraph()
+    dag.add_node("commit1")
+    dag.add_node("commit2")
+    dag.add_node("commit3")
+    dag.add_edge("commit1", "commit2")
+    dag.add_edge("commit2", "commit3")
+    path_string = get_commit_path_string(dag, "commit3")
+
+    assert "commit3" in path_string
+    assert "commit2" in path_string
+    assert "commit1" in path_string
+    assert "→" in path_string
+
+
+def test_find_similar_paths():
+    dag = nx.DiGraph()
+    # A -> B -> C -> D
+    dag.add_node("A")
+    dag.add_node("B")
+    dag.add_node("C")
+    dag.add_node("D")
+    dag.add_edge("A", "B")
+    dag.add_edge("B", "C")
+    dag.add_edge("C", "D")
+    # A -> B -> E -> F
+    dag.add_node("E")
+    dag.add_node("F")
+    dag.add_edge("B", "E")
+    dag.add_edge("E", "F")
+    with patch(
+        'guardian.dag_builder.textdistance.jaro_winkler.normalized_similarity',
+         return_value=0.95) as mock_jw:
+        similar_paths = find_similar_paths(dag)
+        assert len(similar_paths) > 0
+        found_pair = False
+        for path1, path2, similarity in similar_paths:
+            if (path1 == "D" and path2 == "F") or \
+               (path1 == "F" and path2 == "D"):
+                found_pair = True
+                assert similarity == 0.95
+
+        assert found_pair, "D and F similar"
+        mock_jw.assert_called()
+
+
+def test_detect_history_rewrites():
+    dag = nx.DiGraph()
+    dag.add_node("commit1")
+    dag.add_node("commit2")
+    dag.add_edge("commit1", "commit2")
+
+    with patch('guardian.dag_builder.find_similar_paths',
+         return_value=[("commit1", "commit2", 0.93)]) as mock_find:
+        results = detect_history_rewrites(dag)
+
+        assert "rewrites" in results
+        assert len(results["rewrites"]) == 1
+
+        rewrite = results["rewrites"][0]
+        assert "commit1" in rewrite
+        assert "commit2" in rewrite
+        assert "similarity" in rewrite
+        assert "path1" in rewrite
+        assert "path2" in rewrite
+        mock_find.assert_called_once_with(dag)
+
+
+def test_is_likely_rewrite():
+    path1 = "A→B→C"
+    path2 = "A→B→D"
+    assert is_likely_rewrite(path1, path2) == (True, 0.92)
+
+    path1 = "A→B→C"
+    path2 = "X→Y→Z"
+    assert is_likely_rewrite(path1, path2) == (False, 0.6)
+
+    path1 = "A→B→C"
+    path2 = "A→B→C"
+    assert is_likely_rewrite(path1, path2) == (True, 1.0)
