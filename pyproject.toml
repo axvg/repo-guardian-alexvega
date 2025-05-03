@@ -19,6 +19,9 @@ dependencies = [
     "textdistance",
     "networkx",
     "typer",
+    "tox",
+    "pdoc3",
+    "pytest-html",
 ]
 
 [tool.setuptools]
