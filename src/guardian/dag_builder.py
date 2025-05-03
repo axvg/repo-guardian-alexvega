@@ -2,7 +2,8 @@ import networkx as nx
 from pathlib import Path
 from collections import defaultdict, deque
 from guardian.object_scanner import GitObject, read_loose, read_packfile
-from typing import Dict, List
+from typing import Dict, List, Tuple
+import textdistance
 import re
 
 
@@ -179,3 +180,113 @@ def get_dag_stats(dag: nx.DiGraph) -> Dict[str, int]:
             stats["is_dag"] = -1
 
     return stats
+
+
+JW_THRESOLD = 0.92
+
+
+def get_commit_path_string(dag: nx.DiGraph, commit_sha: str) -> str:
+    """
+    Generates a string representation of the path from commit to root.
+
+    Args:
+        dag: of commits
+        commit_sha: SHA of the init commit
+
+    Returns:
+        String containing the first 8 chars of each SHA in the path
+    """
+    path = []
+    current = commit_sha
+    while current:
+        path.append(current[:8])
+        parents = list(dag.predecessors(current))
+        if not parents:
+            break
+        current = parents[0]
+
+    return "→".join(path)
+
+
+def find_similar_paths(dag: nx.DiGraph) -> List[Tuple[str, str, float]]:
+    """
+    Find commit paths that are similar according to Jaro-Winkler distance.
+
+    Args:
+        dag: of commits
+
+    Returns:
+        List of tuples with (commit1, commit2, similarity) for similar paths
+    """
+    leaves = [node for node in dag.nodes() if dag.out_degree(node) == 0]
+
+    path_strings = {}
+    for leaf in leaves:
+        path_strings[leaf] = get_commit_path_string(dag, leaf)
+
+    similar_paths = []
+    compared = set()
+
+    for leaf1 in leaves:
+        for leaf2 in leaves:
+            if leaf1 == leaf2:
+                continue
+
+            pair_key = tuple(sorted([leaf1, leaf2]))
+            if pair_key in compared:
+                continue
+
+            compared.add(pair_key)
+
+            path1 = path_strings[leaf1]
+            path2 = path_strings[leaf2]
+            similarity = textdistance.jaro_winkler.normalized_similarity(
+                path1, path2)
+
+            if similarity >= JW_THRESOLD:
+                similar_paths.append((leaf1, leaf2, similarity))
+
+    return similar_paths
+
+
+def detect_history_rewrites(dag: nx.DiGraph) -> Dict[str, List[Dict]]:
+    """
+    Detect potential history rewrites in a Git repository.
+
+    Args:
+        dag: of commits
+
+    Returns:
+        Dictionary with rewrites key containing list of potential! rewrites
+    """
+    similar_paths = find_similar_paths(dag)
+
+    results = {
+        "rewrites": [
+            {
+                "commit1": c1,
+                "commit2": c2,
+                "similarity": sim,
+                "path1": get_commit_path_string(dag, c1),
+                "path2": get_commit_path_string(dag, c2)
+            }
+            for c1, c2, sim in similar_paths
+        ]
+    }
+
+    return results
+
+
+def is_likely_rewrite(path1: str, path2: str) -> Tuple[bool, float]:
+    """
+    Determine if two commit paths are likely to be rewrites of each other.
+
+    Args:
+        path1: String representation of first commit path
+        path2: String representation of second commit path
+
+    Returns:
+        Tuple of (is_rewrite, similarity)
+    """
+    similarity = textdistance.jaro_winkler.normalized_similarity(path1, path2)
+    return similarity >= JW_THRESOLD, similarity
