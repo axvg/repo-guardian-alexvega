@@ -188,3 +188,66 @@ def test_build_dag_success():
 
         assert gen_nums_shown
         assert stats_shown
+
+
+def test_detect_rewrites_no_rewrites(runner, mock_git_repo):
+    fake_dag = nx.DiGraph()
+    fake_dag.add_node("commit1")
+    fake_dag.add_node("commit2")
+    fake_dag.add_edge("commit1", "commit2")
+
+    no_rewrites_result = {"rewrites": []}
+
+    with patch(
+        'guardian.cli.build_dag_from_git_commits',
+        return_value=fake_dag) as mock_build_dag, \
+        patch(
+             'guardian.cli.detect_history_rewrites',
+             return_value=no_rewrites_result) as mock_detect:
+        result = runner.invoke(app, ["detect-rewrites", "/repo"])
+
+        assert result.exit_code == 0
+        assert "Building DAG" in result.stdout
+        assert "No potential history rewrites detected" in result.stdout
+        mock_build_dag.assert_called_once()
+        mock_detect.assert_called_once_with(fake_dag)
+
+
+def test_detect_rewrites_with_rewrites(runner, mock_git_repo):
+    fake_dag = nx.DiGraph()
+    fake_dag.add_node("abcdef1234567890")
+    fake_dag.add_node("1234567890abcdef")
+
+    rewrites_result = {
+        "rewrites": [
+            {
+                "commit1": "abcdef1234567890",
+                "commit2": "1234567890abcdef",
+                "similarity": 0.95,
+                "path1": "abcdef12→98765432",
+                "path2": "12345678→98765432"
+            }
+        ]
+    }
+
+    with patch(
+        'guardian.cli.build_dag_from_git_commits',
+        return_value=fake_dag) as mock_build_dag, \
+        patch('guardian.cli.detect_history_rewrites',
+              return_value=rewrites_result) as mock_detect:
+        result = runner.invoke(app, ["detect-rewrites", "/repo"])
+
+        assert "Building DAG" in result.stdout
+        assert "Found 1 potential history rewrites" in result.stdout
+        assert "Similarity: 0.9500" in result.stdout
+        assert "Commit 1: abcdef12" in result.stdout
+        assert "Commit 2: 12345678" in result.stdout
+        mock_build_dag.assert_called_once()
+        mock_detect.assert_called_once_with(fake_dag)
+
+
+def test_detect_rewrites_invalid_repo(runner):
+    with patch('guardian.cli.get_git_dir', return_value=None):
+        result = runner.invoke(app, ["detect-rewrites", "/repo"])
+        assert result.exit_code == 2
+        assert "not a git repository" in result.stdout.lower()
