@@ -10,7 +10,7 @@ OBJECT_DIR_PATH = Path("features/corrupt-blob.git/objects/1d")
 def test_valid_object_from_features():
     git_object = object_scanner.read_loose(OBJECT_DIR_PATH)
     assert git_object.size > 0
-    assert git_object.type == "tree"
+    assert git_object.obj_type == "tree"
     assert git_object.content is not None
     assert len(git_object.sha) > 0
 
@@ -46,7 +46,9 @@ def test_unknown_object_type():
         with open(obj_file, "wb") as f:
             f.write(zlib.compress(b"unknown 10\0content"))
 
-        with pytest.raises(ValueError, match="Unknown object type"):
+        with pytest.raises(
+            ValueError, match="Unknown object obj_type -> unknown"
+                          ):
             object_scanner.read_loose(unknown_dir)
 
 
