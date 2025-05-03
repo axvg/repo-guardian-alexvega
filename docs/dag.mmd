@@ -1,0 +1,43 @@
+graph TD
+    subgraph "Historia Lineal"
+        A1("Commit A1 (Root)")
+        A2("Commit A2")
+        A3("Commit A3")
+
+        A1 --> A2
+        A2 --> A3
+    end
+
+    subgraph "Branching"
+        B1("Commit B1 (Ancestor)")
+        B2("Commit B2 (Branch feature)")
+        B3("Commit B3 (Branch master)")
+
+        B1 --> B2
+        B1 --> B3
+    end
+
+    subgraph "Merging"
+        C1("Commit C1 (Base)")
+        C2("Commit C2 (Feature tip)")
+        C3("Commit C3 (Master tip)")
+        C4("Commit C4 (Merge commit)")
+
+        C1 --> C2
+        C1 --> C3
+        C2 --> C4
+        C3 --> C4
+    end
+
+    subgraph "Danglingc/Orphan Commits"
+        D1("Commit D1 (Reachable)")
+        D2("Commit D2 (Dangling)")
+        D3("Commit D3 (Orphan)")
+
+        D1 --> D2
+    end
+
+
+    A3 --> B1
+    B3 --> C1
+    C4 --> D1
