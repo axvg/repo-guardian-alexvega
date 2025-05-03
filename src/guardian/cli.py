@@ -13,6 +13,7 @@ from guardian.dag_builder import (
     build_dag_from_git_commits,
     calculate_generation_numbers,
     get_dag_stats,
+    detect_history_rewrites
 )
 
 
@@ -109,6 +110,49 @@ def build_dag(repo_path: str):
         fg=typer.colors.GREEN,
         bold=True,
     )
+
+
+@app.command()
+def detect_rewrites(repo_path: str):
+    """
+    Detect potential history rewrites using Jaro-Winkler distance
+    """
+    repo_path = Path(repo_path)
+    git_repo_path = get_git_dir(repo_path)
+    if not git_repo_path:
+        typer.echo(f"Path {repo_path} is not a git repository!")
+        raise typer.Exit(code=2)
+
+    typer.secho(
+        f"Building DAG from {git_repo_path}...",
+        fg=typer.colors.BLUE,
+        bold=True)
+    dag = build_dag_from_git_commits(git_repo_path)
+
+    typer.secho(
+        "Detecting potential history rewrites...",
+        fg=typer.colors.BLUE)
+    results = detect_history_rewrites(dag)
+
+    if not results["rewrites"]:
+        typer.secho(
+            "No potential history rewrites detected.",
+            fg=typer.colors.GREEN)
+    else:
+        typer.secho(
+            f"Found {len(results['rewrites'])} potential history rewrites:",
+            fg=typer.colors.YELLOW, bold=True)
+
+        for rewrite in results["rewrites"]:
+            typer.echo("")
+            typer.secho(
+                f"Similarity: {rewrite['similarity']:.4f}",
+                fg=typer.colors.YELLOW)
+            typer.echo(f"Commit 1: {rewrite['commit1'][:8]}")
+            typer.echo(f"Path 1  : {rewrite['path1']}")
+            typer.echo(f"Commit 2: {rewrite['commit2'][:8]}")
+            typer.echo(f"Path 2  : {rewrite['path2']}")
+    return 3 if results["rewrites"] else 0
 
 
 if __name__ == "__main__":
