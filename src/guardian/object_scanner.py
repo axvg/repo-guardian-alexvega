@@ -116,21 +116,66 @@ def extract_object_at_offset(packfile_path: Path, offset: int) -> GitObject:
             byte = ord(f.read(1))
             size |= (byte & 0x7f) << shift
             shift += 7
-        type_map = {1: "commit", 2: "tree", 3: "blob", 4: "tag"}
+
+        type_map = {
+            1: "commit",
+            2: "tree",
+            3: "blob",
+            4: "tag",
+            6: "ofs_delta",     # offset delta
+            7: "ref_delta"      # ref delta
+        }
+
         if obj_type_id not in type_map:
             raise ValueError(f"Unknown object type: {obj_type_id}")
+
         obj_type = type_map[obj_type_id]
-        compressed_data = b""
-        chunk = f.read(4096)
-        while chunk:
-            compressed_data += chunk
-            try:
-                content = zlib.decompress(compressed_data)
-                break  # ok decompression
-            except zlib.error:
-                chunk = f.read(4096)
-        header_str = f"{obj_type} {size}".encode('ascii') + b'\0'
-        sha = sha1(header_str + content).hexdigest()
+
+        content = b""
+
+        if obj_type in ["ofs_delta", "ref_delta"]:
+            if obj_type == "ofs_delta":
+                base_offset = 0
+                shift = 0
+                byte = ord(f.read(1))
+                base_offset = byte & 0x7f
+                while byte & 0x80:
+                    byte = ord(f.read(1))
+                    base_offset |= (byte & 0x7f) << shift
+                    shift += 7
+            elif obj_type == "ref_delta":
+                pass
+                # base_sha = f.read(20).hex()
+            compressed_data = b""
+            chunk = f.read(4096)
+
+            while chunk:
+                compressed_data += chunk
+                try:
+                    content = zlib.decompress(compressed_data)
+                    break  # ok decompression
+                except zlib.error:
+                    chunk = f.read(4096)
+                    if not chunk:  # no more data
+                        raise ValueError("Failed to decompress delta data")
+            sha = f"delta_{offset}_{size}"
+        else:
+            compressed_data = b""
+            chunk = f.read(4096)
+
+            while chunk:
+                compressed_data += chunk
+                try:
+                    content = zlib.decompress(compressed_data)
+                    break  # ok decompression
+                except zlib.error:
+                    chunk = f.read(4096)
+                    if not chunk:  # no more data
+                        raise ValueError("Failed to decompress object data")
+
+            header_str = f"{obj_type} {size}".encode('ascii') + b'\0'
+            sha = sha1(header_str + content).hexdigest()
+
         return GitObject(
             obj_type=obj_type,
             sha=sha,
