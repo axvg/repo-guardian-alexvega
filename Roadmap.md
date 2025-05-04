@@ -15,12 +15,18 @@ Este documento detalla el plan general para el proyecto Repo-guardian. Se muestr
 |   | | RX-09 Agregar cli para lecturas de Git objects | Alta | Done | https://github.com/axvg/repo-guardian/issues/14 |
 |  **E-03 Implementacion de DAG** | | RX-10 Crear archivo mermaid con la estructura del DAG de commits | Media | Done | https://github.com/axvg/repo-guardian/issues/17 |
 |   | | RX-11 Implementar estructura de DAG en dag_builder.py | Alta | Done | https://github.com/axvg/repo-guardian/issues/18 |
-|   | | RX-12 Implementar construccion completa del grafo  | Alta | In Progress | https://github.com/axvg/repo-guardian/issues/21 |
-|   | | RX-13 Implementar calculo de Generation Number (GN) | Alta | In Progress | https://github.com/axvg/repo-guardian/issues/22 |
-| **E-04 Implementacion de JW**  | | RX-14 Implementar deteccion JW | Alta | In Progress | https://github.com/axvg/repo-guardian/issues/25 |
-| **E-05 Script para post-merge** | | RX-15 Implementar hook post-merge | Alta | In Progress | https://github.com/axvg/repo-guardian/issues/23 |
-| **E-05 Entrega de release de v 0.5.0**  | | RX-16 Configurar release de v0.5.0 | Alta | In Progress | https://github.com/axvg/repo-guardian/issues/24 |
-|   | | RX-17 | Media | In Progress | link |
-|   | | RX-18 | Media | In Progress | link |
-|   | | RX-19 | Media | In Progress | link |
-|   | | RX-20 | Media | In Progress | link |
+|   | | RX-12 Implementar construccion completa del grafo  | Alta | Done | https://github.com/axvg/repo-guardian/issues/21 |
+|   | | RX-13 Implementar calculo de Generation Number (GN) | Alta | Done | https://github.com/axvg/repo-guardian/issues/22 |
+| **E-04 Implementacion de JW**  | | RX-14 Implementar deteccion JW | Alta | Done | https://github.com/axvg/repo-guardian/issues/25 |
+| **E-05 Script para post-merge** | | RX-15 Implementar hook post-merge | Alta | Done | https://github.com/axvg/repo-guardian/issues/23 |
+| **E-06 Entrega de release de v 0.5.0**  | | RX-16 Configurar release de v0.5.0 | Alta | Done | https://github.com/axvg/repo-guardian/issues/24 |
+| **E-07 Implementacion de reparacion**   | | RX-17 Implementar integracion con git bisect    | Alta | In Progress | link |
+|   | | RX-18 Implementar generacion scripts rebase/cherry-pick | Alta | In Progress | link |
+|   | | RX-19 Implementar manejo de three-way merge  | Alta | In Progress | link |
+|   | | RX-20  Implementar script recuperacion reflog+reset | Alta | In Progress | link |
+| **E-08 Implementacion de interfaz de usuario**   | | RX-21 Implementar mas comandos CLI    | Alta | In Progress | link |
+|   | | RX-22  Configurar auto-completado para CLI | Baja | In Progress | link |
+|   | | RX-23  Publicar reportes JUnit para Github actions annotations | Baja | In Progress | link |
+| **E-09 Implementacion de medicion de rendimiento**   | | RX-24 Implementar script benchmark vs git fsck   | Alta | In Progress | link |
+|   | | RX-25  Integrar con en MkDocs | Media | In Progress | link |
+|   | | RX-25  Publicar en MkDocs | BVaja | In Progress | link |
