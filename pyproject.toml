@@ -19,8 +19,14 @@ dependencies = [
     "textdistance",
     "networkx",
     "typer",
+    "tox",
+    "pdoc3",
+    "pytest-html",
 ]
 
 [tool.setuptools]
 packages = ["guardian"]
 package-dir = {"" = "src"}
+
+[tool.pytest.ini_options]
+pythonpath = ["src"]
