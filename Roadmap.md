@@ -20,7 +20,7 @@ Este documento detalla el plan general para el proyecto Repo-guardian. Se muestr
 | **E-04 Implementacion de JW**  | | RX-14 Implementar deteccion JW | Alta | Done | https://github.com/axvg/repo-guardian/issues/25 |
 | **E-05 Script para post-merge** | | RX-15 Implementar hook post-merge | Alta | Done | https://github.com/axvg/repo-guardian/issues/23 |
 | **E-06 Entrega de release de v 0.5.0**  | | RX-16 Configurar release de v0.5.0 | Alta | Done | https://github.com/axvg/repo-guardian/issues/24 |
-| **E-07 Implementacion de reparacion**   | | RX-17 Implementar integracion con git bisect    | Alta | In Progress | link |
+| **E-07 Implementacion de reparacion**   | | RX-17 Implementar integracion con git bisect    | Alta | Done | https://github.com/axvg/repo-guardian/issues/31 |
 |   | | RX-18 Implementar generacion scripts rebase/cherry-pick | Alta | In Progress | link |
 |   | | RX-19 Implementar manejo de three-way merge  | Alta | In Progress | link |
 |   | | RX-20  Implementar script recuperacion reflog+reset | Alta | In Progress | link |
@@ -29,4 +29,4 @@ Este documento detalla el plan general para el proyecto Repo-guardian. Se muestr
 |   | | RX-23  Publicar reportes JUnit para Github actions annotations | Baja | In Progress | link |
 | **E-09 Implementacion de medicion de rendimiento**   | | RX-24 Implementar script benchmark vs git fsck   | Alta | In Progress | link |
 |   | | RX-25  Integrar con en MkDocs | Media | In Progress | link |
-|   | | RX-25  Publicar en MkDocs | BVaja | In Progress | link |
+|   | | RX-26  Publicar en MkDocs | Baja | In Progress | link |
