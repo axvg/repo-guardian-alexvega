@@ -9,12 +9,24 @@ Una utilidad CLI/TUI para auditar, reparar y re-lineralizar la integridad de dir
 
 Asegurar la integridad del historial del repositorio con git, identificando y corrigiendo corrupciones de datos.
 
+## Caracteristicas
+
+- Escaneo de objetos Git (loose y packfiles)
+- Construccion de DAG (Directed Acyclic Graph) de commits
+- Calculo de Generation Numbers (GN)
+- Deteccion de reescritura de historia mediante algoritmo Jaro-Winkler
+- Exportacion de grafos en formato GraphML
+
 ## Instalacion
 
-TODO
+```sh
+git clone https://github.com/axvg/repo-guardian-alexvega.git repo-guardian
+cd repo-guardian
+# TODO
+```
 
 ## Uso
 
 ```sh
-guardian scan /ruta/a/tu/repo
+# TODO
 ```
