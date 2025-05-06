@@ -1,4 +1,5 @@
 import typer
+import click
 from pathlib import Path
 import networkx as nx
 
@@ -20,6 +21,12 @@ from guardian.git_commands import (
     bisect_run,
     bisect_log,
     get_current_bisect_status,
+)
+
+from guardian.repair import (
+    create_cherry_pick_script,
+    create_rebase_script,
+    create_reset_recovery_script,
 )
 
 app = typer.Typer()
@@ -293,6 +300,91 @@ def bisect(
                     )
 
         return
+
+
+@app.command()
+def generate_script(repo_path: str):
+    """
+    Generate repair scripts for repository maintenance.
+
+    This command provides an interactive interface to create different types of scripts:
+    - Cherry pick scripts: Apply specific commits to a target branch
+    - Rebase scripts: Rebase a branch onto another branch
+    - Reset recovery scripts: Reset to a specific commit with a backup
+    """
+    repo_path = Path(repo_path)
+    git_repo_path = get_git_dir(repo_path)
+    if not git_repo_path:
+        typer.echo(f"Path {repo_path} is not a git repository!")
+        raise typer.Exit(code=2)
+
+    typer.secho(
+        "Script Generator for Guardian Repo",
+        fg=typer.colors.GREEN,
+        bold=True,
+    )
+
+    script_type = typer.prompt(
+        "What type of script do you want to generate?",
+        type=click.Choice(["cherry-pick", "rebase", "reset"], case_sensitive=False),
+    )
+
+    output_dir = repo_path
+
+    if script_type.lower() == "cherry-pick":
+        target_branch = typer.prompt(
+            "Target branch to cherry-pick onto", default="master"
+        )
+        commits_input = typer.prompt(
+            "Commits to cherry-pick (comma-separated SHAs or ranges)"
+        )
+
+        commits = []
+        for item in commits_input.split(","):
+            item = item.strip()
+            if ".." in item:
+                typer.echo(
+                    f"Note: Commit range '{item}' specified - "
+                    "please ensure these are valid commits"
+                )
+            commits.append(item)
+
+        success, message, script_path = create_cherry_pick_script(
+            repo_path, commits, target_branch, output_dir
+        )
+
+    elif script_type.lower() == "rebase":
+        branch = typer.prompt("Branch to rebase", default="feature-branch")
+        onto_branch = typer.prompt("Branch to rebase onto", default="master")
+        interactive = typer.confirm("Generate an interactive rebase?", default=False)
+
+        success, message, script_path = create_rebase_script(
+            repo_path, branch, onto_branch, interactive, output_dir
+        )
+
+    elif script_type.lower() == "reset":
+        target_commit = typer.prompt("Commit to reset to (SHA, tag, or branch)")
+        create_backup = typer.confirm(
+            "Create backup branch before reset?", default=True
+        )
+
+        success, message, script_path = create_reset_recovery_script(
+            repo_path, target_commit, create_backup, output_dir
+        )
+
+    if success:
+        typer.secho(
+            f"Script successfully generated at: {script_path}",
+            fg=typer.colors.GREEN,
+        )
+        typer.echo("To run the script:")
+        typer.echo(f"  bash {script_path}")
+    else:
+        typer.secho(
+            f"Failed to generate script: {message}",
+            fg=typer.colors.RED,
+        )
+        raise typer.Exit(code=1)
 
 
 if __name__ == "__main__":

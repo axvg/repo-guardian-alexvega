@@ -1,7 +1,7 @@
 import pytest
 from unittest.mock import patch, MagicMock
 
-from src.guardian.git_commands import (
+from guardian.git_commands import (
     run_git_command,
     bisect_start,
     bisect_good,
