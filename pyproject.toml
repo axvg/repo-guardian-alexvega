@@ -1,30 +1,34 @@
 [project]
 name = "repo-guardian"
 version = "0.1.0"
+description = "A CLI/TUI utility for auditing and repairing Git repositories."
 readme = "README.md"
 requires-python = ">=3.12"
 license = {text = "MIT"}
-authors = [
-    {name = "Alex Vega"}
-]
+authors = [{name = "Alex Vega"}]
 dependencies = [
-    "behave",
-    "pytest",
-    "pytest-xdist",
-    "pytest-cov",
+    "typer",
+    "pyinstaller",
+    "networkx",
+    "textdistance",
     "rich",
+    "pytest",
+    "pytest-cov",
+    "pytest-xdist",
+    "behave",
     "ruff",
     "coverage",
-    "pygtrie",
-    "textdistance",
-    "networkx",
-    "typer",
-    "tox",
     "pdoc3",
-    "pytest-html",
     "black",
     "flake8-bugbear"
 ]
+
+[project.scripts]
+repo-guardian = "guardian.cli:app"
+
+[build-system]
+requires = ["setuptools", "wheel"]
+build-backend = "setuptools.build_meta"
 
 [tool.setuptools]
 packages = ["guardian"]
@@ -32,3 +36,12 @@ package-dir = {"" = "src"}
 
 [tool.pytest.ini_options]
 pythonpath = ["src"]
+
+[tool.poetry]
+name = "repo-guardian"
+version = "0.9.0"
+authors = ["Alex Vega"]
+
+packages = [
+    { include = "guardian", from = "src" }
+]
