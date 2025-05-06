@@ -1,6 +1,6 @@
 [project]
 name = "repo-guardian"
-version = "0.1.0"
+version = "0.9.6-c"
 description = "A CLI/TUI utility for auditing and repairing Git repositories."
 readme = "README.md"
 requires-python = ">=3.12"
@@ -39,7 +39,6 @@ pythonpath = ["src"]
 
 [tool.poetry]
 name = "repo-guardian"
-version = "0.9.0"
 authors = ["Alex Vega"]
 
 packages = [
