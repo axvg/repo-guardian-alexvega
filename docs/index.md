@@ -1,5 +1,17 @@
-# Documentacion de Repo-guardian
+# Repo guardian
 
-Bienvenido a la documentacion de Repo-guardian.
+## Purpose
 
-TODO
+
+## Features
+
+
+## Installation
+
+```bash
+git clone https://github.com/axvg/repo-guardian-alexvega.git repo-guardian
+cd repo-guardian
+pip install -e .
+```
+
+## Commands
