@@ -1,6 +1,5 @@
 [project]
 name = "repo-guardian"
-version = "0.9.6-g"
 description = "A CLI/TUI utility for auditing and repairing Git repositories."
 readme = "README.md"
 requires-python = ">=3.12"
@@ -38,10 +37,6 @@ package-dir = {"" = "src"}
 pythonpath = ["src"]
 
 [tool.poetry]
-name = "repo-guardian"
-version = "2.1"
-authors = ["Alex Vega"]
-
 packages = [
     { include = "guardian", from = "src" }
 ]
