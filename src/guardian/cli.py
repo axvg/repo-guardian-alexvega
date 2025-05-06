@@ -29,6 +29,10 @@ from guardian.repair import (
     create_reset_recovery_script,
 )
 
+from guardian.merge import (
+    perform_three_way_merge,
+)
+
 app = typer.Typer()
 
 
@@ -384,6 +388,99 @@ def generate_script(repo_path: str):
             f"Failed to generate script: {message}",
             fg=typer.colors.RED,
         )
+        raise typer.Exit(code=1)
+
+
+@app.command()
+def merge(repo_path: str):
+    """
+    Perform a three-way merge between two branches.
+
+    This command helps to merge changes from one branch into another,
+    with optional control over the merge base and strategy.
+    """
+    repo_path = Path(repo_path)
+    git_repo_path = get_git_dir(repo_path)
+    if not git_repo_path:
+        typer.echo(f"Path {repo_path} is not a git repository!")
+        raise typer.Exit(code=2)
+
+    typer.secho(
+        "Three-way Merge Tool",
+        fg=typer.colors.GREEN,
+        bold=True,
+    )
+
+    ours_branch = typer.prompt("Enter your current branch (ours)", default="main")
+
+    theirs_branch = typer.prompt("Enter the branch to merge in (theirs)")
+
+    use_base = typer.confirm(
+        "Do you want to specify a custom merge base?", default=False
+    )
+
+    base_commit = None
+    if use_base:
+        base_commit = typer.prompt("Enter the base commit (common ancestor)")
+
+    use_strategy = typer.confirm(
+        "Do you want to specify a merge strategy?", default=False
+    )
+
+    strategy = None
+    if use_strategy:
+        strategy = typer.prompt(
+            "Enter merge strategy",
+            type=click.Choice(
+                ["recursive", "resolve", "octopus", "ours", "subtree"],
+                case_sensitive=False,
+            ),
+        )
+
+    typer.echo(f"Merging {theirs_branch} into {ours_branch}...")
+
+    success, message = perform_three_way_merge(
+        repo_path, ours_branch, theirs_branch, base_commit, strategy
+    )
+
+    if success:
+        typer.secho(
+            f"Merge successful: {message}",
+            fg=typer.colors.GREEN,
+        )
+    else:
+        typer.secho(
+            f"Merge failed: {message}",
+            fg=typer.colors.RED,
+        )
+        if "conflicts detected" in message.lower():
+            handle_conflicts = typer.confirm(
+                "Do you want to handle merge conflicts?", default=True
+            )
+
+            if handle_conflicts:
+                conflict_strategy = typer.prompt(
+                    "How do you want to resolve conflicts?",
+                    type=click.Choice(
+                        ["manual", "ours", "theirs"], case_sensitive=False
+                    ),
+                )
+
+                if conflict_strategy == "manual":
+                    typer.echo(
+                        "Please resolve conflicts manually and then run 'git commit'"
+                    )
+                elif conflict_strategy == "ours":
+                    typer.echo("Resolving with 'ours' strategy...")
+                    typer.echo(
+                        "Run: git checkout --ours <conflicted-files> && git add <conflicted-files>"     # NOQA
+                    )
+                elif conflict_strategy == "theirs":
+                    typer.echo("Resolving with 'theirs' strategy...")
+                    typer.echo(
+                        "Run: git checkout --theirs <conflicted-files> && git add <conflicted-files>"   # NOQA
+                    )
+
         raise typer.Exit(code=1)
 
 
