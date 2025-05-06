@@ -1,6 +1,6 @@
 [project]
 name = "repo-guardian"
-version = "0.9.6-g"
+version = "1.0.0"
 description = "A CLI/TUI utility for auditing and repairing Git repositories."
 readme = "README.md"
 requires-python = ">=3.12"
@@ -27,7 +27,7 @@ dependencies = [
 repo-guardian = "guardian.cli:app"
 
 [build-system]
-requires = ["setuptools", "wheel"]
+requires = ["setuptools", "wheel", "cython"]
 build-backend = "setuptools.build_meta"
 
 [tool.setuptools]
@@ -40,7 +40,6 @@ pythonpath = ["src"]
 [tool.poetry]
 name = "repo-guardian"
 version = "2.1"
-authors = ["Alex Vega"]
 
 packages = [
     { include = "guardian", from = "src" }
