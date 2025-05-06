@@ -336,7 +336,6 @@ def test_bisect_interactive_existing_session_continue(runner, mock_git_repo):
             {"good_commits": ["commit1"], "bad_commits": ["commit2"]},
         )
 
-        # Simulate user input: no to terminate, mark a commit as good, then HEAD~3
         result = runner.invoke(app, ["bisect", "/repo"], input="n\ngood\nHEAD~3\n")
 
         assert result.exit_code == 1
@@ -347,3 +346,111 @@ def test_bisect_interactive_existing_session_continue(runner, mock_git_repo):
         mock_status.assert_called_once()
         mock_log.assert_called_once_with(Path("/repo"))
         mock_good.assert_called_once_with(Path("/repo"), "HEAD~3")
+
+
+def test_merge_non_git_repo(runner):
+    with patch("guardian.cli.get_git_dir", return_value=None):
+        result = runner.invoke(app, ["merge", "/not/a/git/repo"])
+        assert result.exit_code == 2
+        assert "not a git repository" in result.stdout.lower()
+
+
+def test_merge_success(runner, mock_git_repo):
+    with patch("guardian.cli.perform_three_way_merge") as mock_merge:
+        mock_merge.return_value = (True, "Successfully merged feature into main")
+
+        result = runner.invoke(app, ["merge", "/repo"], input="main\nfeature\nn\nn\n")
+
+        assert result.exit_code == 0
+        assert "Three-way Merge Tool" in result.stdout
+        assert "Merging feature into main" in result.stdout
+        assert "Merge successful" in result.stdout
+
+        mock_merge.assert_called_once_with(Path("/repo"), "main", "feature", None, None)
+
+
+def test_merge_with_options(runner, mock_git_repo):
+    with patch("guardian.cli.perform_three_way_merge") as mock_merge:
+        mock_merge.return_value = (
+            True,
+            "Successfully merged feature into main using custom options",
+        )
+
+        result = runner.invoke(
+            app,
+            ["merge", "/repo"],
+            input="main\nfeature\ny\ncommon-ancestor\ny\nrecursive\n",
+        )
+
+        assert result.exit_code == 0
+        assert "Three-way Merge Tool" in result.stdout
+        assert "Merge successful" in result.stdout
+
+        mock_merge.assert_called_once_with(
+            Path("/repo"), "main", "feature", "common-ancestor", "recursive"
+        )
+
+
+def test_merge_conflict(runner, mock_git_repo):
+    with patch("guardian.cli.perform_three_way_merge") as mock_merge:
+        mock_merge.return_value = (
+            False,
+            "Merge conflicts detected: CONFLICT (content): Merge conflict in file.txt",
+        )
+
+        result = runner.invoke(
+            app, ["merge", "/repo"], input="main\nfeature\nn\nn\ny\nmanual\n"
+        )
+
+        assert result.exit_code == 1
+        assert "Three-way Merge Tool" in result.stdout
+        assert "Merge failed" in result.stdout
+        assert "conflict" in result.stdout.lower()
+        assert "Please resolve conflicts manually" in result.stdout
+
+        mock_merge.assert_called_once_with(Path("/repo"), "main", "feature", None, None)
+
+
+def test_merge_conflict_ours_strategy(runner, mock_git_repo):
+    with patch("guardian.cli.perform_three_way_merge") as mock_merge:
+        mock_merge.return_value = (
+            False,
+            "Merge conflicts detected: CONFLICT (content): Merge conflict in file.txt",
+        )
+
+        result = runner.invoke(
+            app, ["merge", "/repo"], input="main\nfeature\nn\nn\ny\nours\n"
+        )
+
+        assert result.exit_code == 1
+        assert "Resolving with 'ours' strategy" in result.stdout
+        assert "git checkout --ours" in result.stdout
+
+
+def test_merge_conflict_theirs_strategy(runner, mock_git_repo):
+    with patch("guardian.cli.perform_three_way_merge") as mock_merge:
+        mock_merge.return_value = (
+            False,
+            "Merge conflicts detected: CONFLICT (content): Merge conflict in file.txt",
+        )
+
+        result = runner.invoke(
+            app, ["merge", "/repo"], input="main\nfeature\nn\nn\ny\ntheirs\n"
+        )
+
+        assert result.exit_code == 1
+        assert "Resolving with 'theirs' strategy" in result.stdout
+        assert "git checkout --theirs" in result.stdout
+
+
+def test_merge_failure_not_conflict(runner, mock_git_repo):
+    with patch("guardian.cli.perform_three_way_merge") as mock_merge:
+        mock_merge.return_value = (False, "Merge failed: not a valid branch")
+
+        result = runner.invoke(
+            app, ["merge", "/repo"], input="main\ninvalid-branch\nn\nn\n"
+        )
+
+        assert result.exit_code == 1
+        assert "Merge failed" in result.stdout
+        assert "not a valid branch" in result.stdout
