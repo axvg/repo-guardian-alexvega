@@ -21,12 +21,16 @@ Este documento detalla el plan general para el proyecto Repo-guardian. Se muestr
 | **E-05 Script para post-merge** | | RX-15 Implementar hook post-merge | Alta | Done | https://github.com/axvg/repo-guardian/issues/23 |
 | **E-06 Entrega de release de v 0.5.0**  | | RX-16 Configurar release de v0.5.0 | Alta | Done | https://github.com/axvg/repo-guardian/issues/24 |
 | **E-07 Implementacion de reparacion**   | | RX-17 Implementar integracion con git bisect    | Alta | Done | https://github.com/axvg/repo-guardian/issues/31 |
-|   | | RX-18 Implementar generacion scripts rebase/cherry-pick | Alta | In Progress | link |
-|   | | RX-19 Implementar manejo de three-way merge  | Alta | In Progress | link |
-|   | | RX-20  Implementar script recuperacion reflog+reset | Alta | In Progress | link |
-| **E-08 Implementacion de interfaz de usuario**   | | RX-21 Implementar mas comandos CLI    | Alta | In Progress | link |
-|   | | RX-22  Configurar auto-completado para CLI | Baja | In Progress | link |
-|   | | RX-23  Publicar reportes JUnit para Github actions annotations | Baja | In Progress | link |
-| **E-09 Implementacion de medicion de rendimiento**   | | RX-24 Implementar script benchmark vs git fsck   | Alta | In Progress | link |
-|   | | RX-25  Integrar con en MkDocs | Media | In Progress | link |
-|   | | RX-26  Publicar en MkDocs | Baja | In Progress | link |
+|   | | RX-18 Implementar generacion scripts rebase/cherry-pick | Alta | In Progress | https://github.com/axvg/repo-guardian-alexvega/issues/33 |
+|   | | RX-19 Implementar manejo de three-way merge  | Alta | In Progress | https://github.com/axvg/repo-guardian-alexvega/issues/34 |
+|   | | RX-20  Implementar script recuperacion reflog+reset | Alta | In Progress |  |
+| **E-08 Implementacion de interfaz de usuario**   | | RX-21 Implementar mas comandos CLI    | Alta | Done |  |
+|   | | RX-22  Configurar auto-completado para CLI | Baja | In Progress |  |
+|   | | RX-23  Publicar reportes JUnit para Github actions annotations | Baja | In Progress |  |
+| **E-09 Implementacion de medicion de rendimiento**   | | RX-24 Implementar script benchmark vs git fsck   | Alta | In Progress | https://github.com/axvg/repo-guardian-alexvega/issues/36 |
+|   | | RX-25  Integrar con en MkDocs | Media | In Progress | https://github.com/axvg/repo-guardian-alexvega/issues/37 |
+|   | | RX-26  Publicar en MkDocs | Baja | In Progress | https://github.com/axvg/repo-guardian-alexvega/issues/37 |
+| **E10 Preparar release v0.9.0**   | | RX-27 Preparar release v0.9.0   | Alta | In Progress | https://github.com/axvg/repo-guardian-alexvega/issues/41 |
+| **E11 Preparar release v.1.0**   | | RX-28 Actualizar github actions para release | Alta | In Progress | https://github.com/axvg/repo-guardian-alexvega/issues/43 |
+| | RX-29 Preparar release v1.0.0   | Alta | In Progress | https://github.com/axvg/repo-guardian-alexvega/issues/42 |
+
