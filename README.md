@@ -1,5 +1,5 @@
 
-![License](https://img.shields.io/badge/License-MIT-yellow.svg) ![Python](https://img.shields.io/badge/python-3.12%2B-blue.svg) [![CI](https://github.com/axvg/repo-guardian/actions/workflows/ci.yml/badge.svg)](https://github.com/axvg/repo-guardian/actions/workflows/ci.yml)
+![License](https://img.shields.io/badge/License-MIT-yellow.svg) ![Python](https://img.shields.io/badge/python-3.12%2B-blue.svg) [![CI](https://github.com/axvg/repo-guardian-alexvega/actions/workflows/ci.yml/badge.svg)](https://github.com/axvg/repo-guardian-alexvega/actions/workflows/ci.yml)
 
 # Repo-guardian
 

@@ -22,6 +22,8 @@ dependencies = [
     "tox",
     "pdoc3",
     "pytest-html",
+    "black",
+    "flake8-bugbear"
 ]
 
 [tool.setuptools]

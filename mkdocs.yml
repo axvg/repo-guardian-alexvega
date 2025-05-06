@@ -1,0 +1,59 @@
+site_name: Repo guardian
+site_description: Una utilidad CLI/TUI para auditar, reparar y re-lineralizar la integridad de directorios .git
+site_author: Alex Vega
+repo_url: https://github.com/axvg/repo-guardian-alexvega
+repo_name: axvg/repo-guardian-alexvega
+
+theme:
+  name: material
+  palette:
+    primary: indigo
+    accent: deep orange
+  features:
+    - navigation.tabs
+    - navigation.sections
+    - navigation.expand
+    - content.code.copy
+    - content.code.annotate
+  icon:
+    repo: fontawesome/brands/github
+  language: en
+
+markdown_extensions:
+  - pymdownx.highlight:
+      anchor_linenums: true
+  - pymdownx.inlinehilite
+  - pymdownx.snippets
+  - pymdownx.superfences
+  - admonition
+  - pymdownx.details
+  - tables
+  - footnotes
+  - toc:
+      permalink: true
+  - pymdownx.emoji:
+      emoji_index: !!python/name:material.extensions.emoji.twemoji
+      emoji_generator: !!python/name:material.extensions.emoji.to_svg
+
+plugins:
+  - search
+  - mkdocstrings:
+      default_handler: python
+      handlers:
+        python:
+          options:
+            docstring_style: google
+            show_root_heading: true
+            show_source: true
+
+nav:
+  - Home: 
+      index.md
+  - User Guide:
+      user-guide/index.md
+  - Architecture:
+      architecture/overview.md
+  - Contributing: 
+      contributing.md
+  - Roadmap: 
+      roadmap.md

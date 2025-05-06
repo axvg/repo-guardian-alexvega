@@ -1,4 +1,4 @@
-from src.guardian import object_scanner
+from guardian import object_scanner
 import pytest
 from pathlib import Path
 import tempfile
